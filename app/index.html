@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+</head>
+<style>
+    #cartItems{
+        list-style: none;
+    }
+</style>
+<body>
+    <nav class="navbar navbar-expand-lg bg-dark border-bottom border-body" data-bs-theme="dark">
+        <div class="container-fluid">
+            <a class="navbar-brand ms-3" href="#">MyProducts.In</a>
+        </div>
+    </nav>
+    <h1 class="mt-3 ms-4">Products</h1>
+
+    <div class="d-inline-flex">
+      <div class="products row m-3" style="width: 75%;">
+       
+          <div class="card m-3 col-sm-2 col-md-4 col-lg-4 col-xl-4" id="c1" style="width: 18rem;">
+              <img src="img/baby.jpg"card-img-top" alt="Product 1">
+              <div class="card-body">
+                  <h5 class="card-title">Baby Pot</h5>
+                  <p class="card-text">₹699</p>
+                  <button class="btn btn-primary">Add to Cart</button>
+              </div>
+          </div>
+          <div class="card m-3 col-sm-2 col-md-4 col-lg-4 col-xl-4" id="c2" style="width: 18rem;">
+              <img src="img/cuteface.jpg" class="card-img-top" alt="Product 2">
+              <div class="card-body">
+                  <h5 class="card-title">Cuteface Pot</h5>
+                  <p class="card-text">₹399</p>
+                  <button class="btn btn-primary">Add to Cart</button>
+              </div>
+          </div>
+          <div class="card m-3 col-sm-2 col-md-4 col-lg-4 col-xl-4" id="c3" style="width: 18rem;">
+              <img src="img/dog.jpg" class="card-img-top" alt="Product 3">
+              <div class="card-body">
+                  <h5 class="card-title">Dog Pot</h5>
+                  <p class="card-text">₹536</p>
+                  <button class="btn btn-primary">Add to Cart</button>
+              </div>
+          </div>
+          <div class="card m-3 col-sm-2 col-md-4 col-lg-4 col-xl-4" id="c4" style="width: 18rem;">
+              <img src="img/elephant.jpg" class="card-img-top" alt="Product 4">
+              <div class="card-body">
+                  <h5 class="card-title">Elephant Pot</h5>
+                  <p class="card-text">₹139</p>
+                  <button class="btn btn-primary">Add to Cart</button>
+              </div>
+          </div>
+          <div class="card m-3 col-sm-2 col-md-4 col-lg-4 col-xl-4" id="c5" style="width: 18rem;">
+              <img src="img/happyface.jpg" class="card-img-top" alt="Product 5">
+              <div class="card-body">
+                  <h5 class="card-title">Happyface Pot</h5>
+                  <p class="card-text">₹199</p>
+                  <button class="btn btn-primary">Add to Cart</button>
+              </div>
+          </div>
+
+          <div class="card m-3 col-sm-2 col-md-4 col-lg-4 col-xl-4" id="c5" style="width: 18rem;">
+                <img src="img/lady.jpg" class="card-img-top" alt="Product 5">
+                <div class="card-body">
+                    <h5 class="card-title">Necklace</h5>
+                    <p class="card-text">₹509</p>
+                    <button class="btn btn-primary">Add to Cart</button>
+                </div>
+          </div>
+      </div>
+      <div style="width: 25%;" id="cart" class="cart-container">
+        <h1>My Cart</h1>
+       
+        <ul id="cartItems"></ul>
+        <p>Total: ₹<span class="total_price">0</span></p>
+    </div>
+    </div>
+    
+    <script>
+        let cart = {};
+        document.querySelectorAll(".btn").forEach((button, index) => {
+            button.dataset.productId = index + 1;
+            button.addEventListener("click", (e) => {
+                const productId = e.target.dataset.productId;
+                const card = e.target.closest(".card");
+                const productName = card.querySelector(".card-title").textContent;
+                const productPrice = parseFloat(card.querySelector(".card-text").textContent.replace("₹", "").replace(",", ""));
+                const productImage = card.querySelector("img").src; 
+    
+                // Update cart object
+                if (cart[productId]) {
+                    cart[productId].quantity++;
+                } else {
+                    cart[productId] = {
+                        productName,
+                        productPrice,
+                        productImage, 
+                        quantity: 1
+                    };
+                }
+               
+                updateCartUI();
+            });
+        });
+    
+        
+        function updateCartUI() {
+            const cartItems = document.getElementById("cartItems");
+            cartItems.innerHTML = "";
+
+            let totalQuantity = 0;
+            let totalPrice = 0;
+
+            Object.keys(cart).forEach((productId) => {
+                const item = cart[productId];
+                const quantity = item.quantity;
+                totalQuantity += quantity;
+                totalPrice += item.productPrice * quantity;
+
+                const cartItemHTML = `
+                    <li>
+                        <img src="${item.productImage}" alt="${item.productName}" style="width: 50px; height: auto; margin-right: 10px;"/>
+                        ${item.productName} x <span class="quantity">${quantity}</span>
+                        <button class="btn btn-sm btn-secondary increase" data-id="${productId}">+</button>
+                        <button class="btn btn-sm btn-secondary decrease" data-id="${productId}">-</button>
+                        <span>₹${(item.productPrice * quantity).toFixed(2)}</span>
+                    </li>`;
+                cartItems.insertAdjacentHTML("beforeend", cartItemHTML);
+            });
+
+         
+            document.querySelector(".total_price").textContent = totalPrice.toFixed(2);
+
+            
+            document.querySelectorAll(".increase").forEach(button => {
+                button.addEventListener("click", (e) => {
+                    const productId = e.target.dataset.id;
+                    cart[productId].quantity++;
+                    updateCartUI(); 
+                });
+            });
+
+            document.querySelectorAll(".decrease").forEach(button => {
+                button.addEventListener("click", (e) => {
+                    const productId = e.target.dataset.id;
+                    if (cart[productId].quantity > 1) {
+                        cart[productId].quantity--; 
+                    } else {
+                        delete cart[productId];
+                    }
+                    updateCartUI(); 
+                });
+            });
+        }
+
+    </script>
+    
+    
+</body>
+</html>
